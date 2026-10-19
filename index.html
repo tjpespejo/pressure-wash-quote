@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Finch Harbor Pressure Washing — Instant Quote</title>
+  <style>
+    :root {
+      --blue: #0b5 cc;
+      --blue: #0b5ccc;
+      --blue-dark: #084a9e;
+      --ink: #1a2330;
+      --muted: #5b6672;
+      --line: #dfe5ec;
+      --bg: #eef3f8;
+      --ok: #0f8a4f;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      color: var(--ink);
+      background: linear-gradient(160deg, #0b5ccc 0%, #0b5ccc 38%, var(--bg) 38%);
+      min-height: 100vh;
+      padding: 32px 16px 64px;
+    }
+    .wrap { max-width: 640px; margin: 0 auto; }
+    header { color: #fff; text-align: center; margin-bottom: 24px; }
+    header .logo { font-size: 14px; letter-spacing: 2px; text-transform: uppercase; opacity: .85; }
+    header h1 { margin: 6px 0 4px; font-size: 28px; }
+    header p { margin: 0; opacity: .9; }
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 12px 40px rgba(8,40,80,.14);
+      padding: 28px;
+    }
+    h2 { font-size: 18px; margin: 0 0 16px; }
+    label { display: block; font-weight: 600; font-size: 14px; margin: 14px 0 6px; }
+    .hint { font-weight: 400; color: var(--muted); font-size: 12px; }
+    input, select {
+      width: 100%;
+      padding: 11px 12px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      font-size: 15px;
+      background: #fff;
+    }
+    input:focus, select:focus { outline: 2px solid var(--blue); border-color: var(--blue); }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    fieldset { border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px 18px; margin: 18px 0 0; }
+    legend { font-weight: 700; padding: 0 6px; font-size: 14px; }
+    .service { display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: center; margin-top: 10px; }
+    .service:first-of-type { margin-top: 0; }
+    .service .name { font-weight: 600; }
+    .service .rate { color: var(--muted); font-size: 13px; }
+    .service input[type="number"] { width: 110px; }
+    .service .qtywrap { display: flex; align-items: center; gap: 6px; }
+    .service .unit { color: var(--muted); font-size: 13px; white-space: nowrap; }
+    .check { width: 18px; height: 18px; }
+    .quote {
+      margin-top: 22px;
+      background: #f4f8fd;
+      border: 1px dashed var(--blue);
+      border-radius: 12px;
+      padding: 18px;
+    }
+    .quote .line { display: flex; justify-content: space-between; font-size: 14px; padding: 4px 0; color: var(--muted); }
+    .quote .total { display: flex; justify-content: space-between; align-items: baseline; margin-top: 10px; padding-top: 12px; border-top: 1px solid var(--line); }
+    .quote .total .lbl { font-weight: 700; font-size: 16px; color: var(--ink); }
+    .quote .total .amt { font-weight: 800; font-size: 30px; color: var(--blue-dark); }
+    .note { font-size: 12px; color: var(--muted); margin-top: 6px; }
+    button {
+      width: 100%;
+      margin-top: 20px;
+      padding: 14px;
+      border: 0;
+      border-radius: 12px;
+      background: var(--blue);
+      color: #fff;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    button:hover { background: var(--blue-dark); }
+    button:disabled { opacity: .6; cursor: not-allowed; }
+    .status { margin-top: 14px; text-align: center; font-size: 14px; min-height: 20px; }
+    .status.ok { color: var(--ok); font-weight: 600; }
+    .status.err { color: #c0392b; font-weight: 600; }
+    footer { text-align: center; color: var(--muted); font-size: 12px; margin-top: 18px; }
+    @media (max-width: 520px) {
+      .row { grid-template-columns: 1fr; }
+      .service { grid-template-columns: auto 1fr; }
+      .service .qtywrap { grid-column: 1 / -1; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="logo">Finch Harbor</div>
+      <h1>Pressure Washing Quote</h1>
+      <p>Tell us what needs cleaning and get your price on the spot.</p>
+    </header>
+
+    <div class="card">
+      <form id="quoteForm" novalidate>
+        <h2>Your details</h2>
+        <div class="row">
+          <div>
+            <label for="name">Full name</label>
+            <input id="name" name="name" type="text" required autocomplete="name" />
+          </div>
+          <div>
+            <label for="phone">Phone</label>
+            <input id="phone" name="phone" type="tel" autocomplete="tel" />
+          </div>
+        </div>
+        <label for="email">Email <span class="hint">(we'll send your quote here)</span></label>
+        <input id="email" name="email" type="email" required autocomplete="email" />
+        <label for="address">Service address</label>
+        <input id="address" name="address" type="text" autocomplete="street-address" />
+
+        <fieldset>
+          <legend>What needs washing?</legend>
+
+          <div class="service">
+            <input class="check" type="checkbox" id="chk_house" data-target="house" />
+            <div>
+              <div class="name">House siding</div>
+              <div class="rate">$0.15 / square foot</div>
+            </div>
+            <div class="qtywrap">
+              <input type="number" id="house" min="0" step="1" placeholder="0" inputmode="numeric" />
+              <span class="unit">sq ft</span>
+            </div>
+          </div>
+
+          <div class="service">
+            <input class="check" type="checkbox" id="chk_driveway" data-target="driveway" />
+            <div>
+              <div class="name">Driveway</div>
+              <div class="rate">$0.12 / square foot</div>
+            </div>
+            <div class="qtywrap">
+              <input type="number" id="driveway" min="0" step="1" placeholder="0" inputmode="numeric" />
+              <span class="unit">sq ft</span>
+            </div>
+          </div>
+
+          <div class="service">
+            <input class="check" type="checkbox" id="chk_deck" data-target="deck" />
+            <div>
+              <div class="name">Deck</div>
+              <div class="rate">$0.30 / square foot</div>
+            </div>
+            <div class="qtywrap">
+              <input type="number" id="deck" min="0" step="1" placeholder="0" inputmode="numeric" />
+              <span class="unit">sq ft</span>
+            </div>
+          </div>
+
+          <div class="service">
+            <input class="check" type="checkbox" id="chk_fence" data-target="fence" />
+            <div>
+              <div class="name">Fence</div>
+              <div class="rate">$1.00 / linear foot</div>
+            </div>
+            <div class="qtywrap">
+              <input type="number" id="fence" min="0" step="1" placeholder="0" inputmode="numeric" />
+              <span class="unit">lin ft</span>
+            </div>
+          </div>
+        </fieldset>
+
+        <div class="quote" id="quoteBox">
+          <div id="breakdown"></div>
+          <div class="total">
+            <span class="lbl">Your estimate</span>
+            <span class="amt" id="totalAmt">$0.00</span>
+          </div>
+          <div class="note" id="minNote" style="display:none;">Minimum job charge of $150 applied.</div>
+          <div class="note">Final price confirmed on site. Estimate assumes standard conditions.</div>
+        </div>
+
+        <button type="submit" id="submitBtn">Email me this quote</button>
+        <div class="status" id="status"></div>
+      </form>
+    </div>
+
+    <footer>Finch Harbor Pressure Washing · Instant estimate tool</footer>
+  </div>
+
+  <script>
+    // ---- Pricing config ----
+    var RATES = { house: 0.15, driveway: 0.12, deck: 0.30, fence: 1.00 };
+    var UNIT  = { house: "sq ft", driveway: "sq ft", deck: "sq ft", fence: "lin ft" };
+    var LABEL = { house: "House siding", driveway: "Driveway", deck: "Deck", fence: "Fence" };
+    var MINIMUM = 150;
+
+    // Web3Forms delivers submissions to careers@finchharbor.com.
+    // Get a free access key at https://web3forms.com (enter careers@finchharbor.com),
+    // then paste it below. No signup required.
+    var FORM_ENDPOINT = "https://api.web3forms.com/submit";
+    var WEB3FORMS_ACCESS_KEY = "PASTE_YOUR_ACCESS_KEY_HERE";
+
+    var fields = ["house", "driveway", "deck", "fence"];
+
+    function money(n) {
+      return "$" + n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
+
+    function getQty(id) {
+      var v = parseFloat(document.getElementById(id).value);
+      if (isNaN(v) || v < 0) return 0;
+      return v;
+    }
+
+    function calc() {
+      var raw = 0;
+      var lines = [];
+      fields.forEach(function (f) {
+        var qty = getQty(f);
+        if (qty > 0) {
+          var cost = qty * RATES[f];
+          raw += cost;
+          lines.push({ label: LABEL[f], detail: qty + " " + UNIT[f] + " × " + money(RATES[f]), cost: cost });
+        }
+      });
+
+      var total = raw;
+      var minApplied = false;
+      if (raw > 0 && raw < MINIMUM) { total = MINIMUM; minApplied = true; }
+
+      // render
+      var bd = document.getElementById("breakdown");
+      bd.innerHTML = "";
+      lines.forEach(function (l) {
+        var row = document.createElement("div");
+        row.className = "line";
+        row.innerHTML = "<span>" + l.label + " <em style='font-style:normal;opacity:.7'>(" + l.detail + ")</em></span><span>" + money(l.cost) + "</span>";
+        bd.appendChild(row);
+      });
+      document.getElementById("totalAmt").textContent = money(total);
+      document.getElementById("minNote").style.display = minApplied ? "block" : "none";
+
+      return { lines: lines, raw: raw, total: total, minApplied: minApplied };
+    }
+
+    // Checkbox toggles focus/enables the matching qty field
+    document.querySelectorAll(".check").forEach(function (chk) {
+      chk.addEventListener("change", function () {
+        var inp = document.getElementById(chk.getAttribute("data-target"));
+        if (chk.checked) { inp.focus(); }
+        else { inp.value = ""; calc(); }
+      });
+    });
+
+    fields.forEach(function (f) {
+      var inp = document.getElementById(f);
+      inp.addEventListener("input", function () {
+        var chk = document.getElementById("chk_" + f);
+        if (getQty(f) > 0) chk.checked = true;
+        calc();
+      });
+    });
+
+    calc();
+
+    var form = document.getElementById("quoteForm");
+    var statusEl = document.getElementById("status");
+    var btn = document.getElementById("submitBtn");
+
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      statusEl.className = "status";
+      statusEl.textContent = "";
+
+      var name = document.getElementById("name").value.trim();
+      var email = document.getElementById("email").value.trim();
+      var result = calc();
+
+      if (!name) { fail("Please enter your name."); return; }
+      if (!/^\S+@\S+\.\S+$/.test(email)) { fail("Please enter a valid email."); return; }
+      if (result.total <= 0 || result.lines.length === 0) { fail("Select at least one service and enter a size."); return; }
+
+      var summaryLines = result.lines.map(function (l) {
+        return l.label + ": " + l.detail + " = " + money(l.cost);
+      });
+      if (result.minApplied) summaryLines.push("Minimum job charge of " + money(MINIMUM) + " applied.");
+
+      var payload = {
+        access_key: WEB3FORMS_ACCESS_KEY,
+        subject: "New pressure washing quote: " + name + " — " + money(result.total),
+        from_name: "Finch Harbor Quote Tool",
+        name: name,
+        email: email,
+        phone: document.getElementById("phone").value.trim(),
+        address: document.getElementById("address").value.trim(),
+        quote_total: money(result.total),
+        quote_breakdown: summaryLines.join("\n")
+      };
+
+      btn.disabled = true;
+      statusEl.textContent = "Sending your quote…";
+
+      fetch(FORM_ENDPOINT, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Accept": "application/json" },
+        body: JSON.stringify(payload)
+      }).then(function (res) {
+        if (res.ok) {
+          statusEl.className = "status ok";
+          statusEl.textContent = "Thanks " + name + "! Your quote of " + money(result.total) + " has been emailed to you and our team.";
+          btn.textContent = "Quote sent ✓";
+        } else {
+          return res.json().then(function (d) {
+            throw new Error(d && d.errors ? d.errors.map(function (x) { return x.message; }).join(", ") : "Submission failed");
+          });
+        }
+      }).catch(function (err) {
+        fail("Could not send automatically (" + err.message + "). Please call us to confirm your quote.");
+        btn.disabled = false;
+      });
+
+      function noop() {}
+    });
+
+    function fail(msg) {
+      statusEl.className = "status err";
+      statusEl.textContent = msg;
+    }
+  </script>
+</body>
+</html>
