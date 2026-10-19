@@ -1,0 +1,97 @@
+# Finch Harbor Pressure Washing — Instant Quote Page
+
+A single-page web app that lets a pressure washing company give a customer a price
+on the spot. The customer enters their details and the areas to be cleaned, sees the
+price calculated live, and on submit the details and quote are emailed to
+`careers@finchharbor.com`.
+
+## Live page
+
+- **URL:** _(add your deployed URL here, e.g. https://your-site.netlify.app)_
+
+## Pricing rules
+
+| Service  | Rate              |
+|----------|-------------------|
+| House    | $0.15 per sq ft   |
+| Driveway | $0.12 per sq ft   |
+| Deck     | $0.30 per sq ft   |
+| Fence    | $1.00 per lin ft  |
+| **Minimum job** | **$150**   |
+
+The customer can select any combination of services and enter a size for each. The
+total is summed from all selected services. If the summed total is greater than $0 but
+below $150, the price is raised to the $150 minimum. The minimum is shown as a note on
+the quote when it applies.
+
+## How it works
+
+The whole app is one static file, `index.html` — HTML, CSS, and vanilla JavaScript.
+There is no backend server and no build step.
+
+1. **Input** — The customer fills in name, email, phone, and address, then checks the
+   services they need and types the size (square feet, or linear feet for fencing).
+2. **Live quote** — As the customer types, JavaScript recalculates the price
+   immediately using the rates above and applies the $150 minimum.
+3. **Submit** — On submit, the page validates the input (name, valid email, at least one
+   service with a size) and sends the quote by email.
+
+## How the email submission works
+
+Email is sent from the browser using **[EmailJS](https://www.emailjs.com/)**, a service
+that delivers email directly from client-side JavaScript — no server required.
+
+### The flow
+
+1. The page loads the EmailJS browser SDK and initializes it with a **Public Key**.
+2. When the customer submits, the page builds a set of template parameters:
+   - `name`, `email`, `phone`, `address`
+   - `quote_total` — the final price (e.g. `$300.00`)
+   - `quote_breakdown` — a line-by-line summary of each service and cost
+   - `time` — submission timestamp
+3. The page calls `emailjs.send(SERVICE_ID, TEMPLATE_ID, templateParams)`.
+4. EmailJS fills those parameters into a pre-defined **email template** and sends the
+   message through a connected Gmail account (the "from" account).
+5. The template's **To Email** is set to `careers@finchharbor.com`, so every quote is
+   delivered there. A green confirmation message is shown to the customer on success.
+
+### EmailJS configuration
+
+Three identifiers are set near the top of the `<script>` block in `index.html`:
+
+```js
+var EMAILJS_PUBLIC_KEY  = "...";   // Account → General → Public Key
+var EMAILJS_SERVICE_ID  = "...";   // Email Services → connected Gmail service
+var EMAILJS_TEMPLATE_ID = "...";   // Email Templates → the quote template
+```
+
+The destination address (`careers@finchharbor.com`), subject line, and layout live in
+the EmailJS **template** on the EmailJS dashboard — not in the page code. The template
+uses these variables: `{{name}}`, `{{email}}`, `{{phone}}`, `{{address}}`,
+`{{quote_total}}`, `{{quote_breakdown}}`, `{{time}}`.
+
+### Why EmailJS
+
+A static page cannot send email by itself. EmailJS lets the page send through a Gmail
+account that the company owns, delivering to any address — the recipient
+(`careers@finchharbor.com`) does not need to verify or configure anything.
+
+## Running locally
+
+Open `index.html` directly in a browser, or serve the folder:
+
+```bash
+# any static server works, e.g.
+npx serve .
+```
+
+## Deploying
+
+The page is static, so any static host works. The simplest is **Netlify Drop**
+(https://app.netlify.com/drop) — drag the project folder onto the page and it goes live
+at a public URL instantly. GitHub Pages, Vercel, or Surge work equally well.
+
+## Files
+
+- `index.html` — the entire application (markup, styles, pricing logic, email submission)
+- `README.md` — this file

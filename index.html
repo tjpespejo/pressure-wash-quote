@@ -6,7 +6,6 @@
   <title>Finch Harbor Pressure Washing — Instant Quote</title>
   <style>
     :root {
-      --blue: #0b5 cc;
       --blue: #0b5ccc;
       --blue-dark: #084a9e;
       --ink: #1a2330;
@@ -94,6 +93,7 @@
       .service .qtywrap { grid-column: 1 / -1; }
     }
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 </head>
 <body>
   <div class="wrap">
@@ -198,11 +198,12 @@
     var LABEL = { house: "House siding", driveway: "Driveway", deck: "Deck", fence: "Fence" };
     var MINIMUM = 150;
 
-    // Web3Forms delivers submissions to careers@finchharbor.com.
-    // Get a free access key at https://web3forms.com (enter careers@finchharbor.com),
-    // then paste it below. No signup required.
-    var FORM_ENDPOINT = "https://api.web3forms.com/submit";
-    var WEB3FORMS_ACCESS_KEY = "PASTE_YOUR_ACCESS_KEY_HERE";
+    // EmailJS delivers each quote to careers@finchharbor.com (set as "To Email"
+    // in the EmailJS template). Sends from the connected Gmail account.
+    var EMAILJS_PUBLIC_KEY = "4x68u8Ozf4pPPqFpw";
+    var EMAILJS_SERVICE_ID = "service_idheyqt";
+    var EMAILJS_TEMPLATE_ID = "template_wbpk2yy";
+    emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
 
     var fields = ["house", "driveway", "deck", "fence"];
 
@@ -289,41 +290,29 @@
       });
       if (result.minApplied) summaryLines.push("Minimum job charge of " + money(MINIMUM) + " applied.");
 
-      var payload = {
-        access_key: WEB3FORMS_ACCESS_KEY,
-        subject: "New pressure washing quote: " + name + " — " + money(result.total),
-        from_name: "Finch Harbor Quote Tool",
+      var templateParams = {
         name: name,
         email: email,
-        phone: document.getElementById("phone").value.trim(),
-        address: document.getElementById("address").value.trim(),
+        phone: document.getElementById("phone").value.trim() || "—",
+        address: document.getElementById("address").value.trim() || "—",
         quote_total: money(result.total),
-        quote_breakdown: summaryLines.join("\n")
+        quote_breakdown: summaryLines.join("\n"),
+        time: new Date().toLocaleString()
       };
 
       btn.disabled = true;
+      statusEl.className = "status";
       statusEl.textContent = "Sending your quote…";
 
-      fetch(FORM_ENDPOINT, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "Accept": "application/json" },
-        body: JSON.stringify(payload)
-      }).then(function (res) {
-        if (res.ok) {
-          statusEl.className = "status ok";
-          statusEl.textContent = "Thanks " + name + "! Your quote of " + money(result.total) + " has been emailed to you and our team.";
-          btn.textContent = "Quote sent ✓";
-        } else {
-          return res.json().then(function (d) {
-            throw new Error(d && d.errors ? d.errors.map(function (x) { return x.message; }).join(", ") : "Submission failed");
-          });
-        }
+      emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams).then(function () {
+        statusEl.className = "status ok";
+        statusEl.textContent = "Thanks " + name + "! Your quote of " + money(result.total) + " has been sent to our team.";
+        btn.textContent = "Quote sent ✓";
       }).catch(function (err) {
-        fail("Could not send automatically (" + err.message + "). Please call us to confirm your quote.");
+        var msg = (err && (err.text || err.message)) ? (err.text || err.message) : "unknown error";
+        fail("Could not send automatically (" + msg + "). Please call us to confirm your quote.");
         btn.disabled = false;
       });
-
-      function noop() {}
     });
 
     function fail(msg) {
