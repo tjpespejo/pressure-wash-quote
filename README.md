@@ -7,7 +7,11 @@ price calculated live, and on submit the details and quote are emailed to
 
 ## Live page
 
-- **URL:** _(add your deployed URL here, e.g. https://your-site.netlify.app)_
+- **URL:** https://jade-sunburst-77b145.netlify.app/
+- **Repository:** https://github.com/tjpespejo/pressure-wash-quote
+
+A note at the top of the form tells the customer that the request is sent to
+`careers@finchharbor.com`.
 
 ## Pricing rules
 
@@ -45,15 +49,22 @@ that delivers email directly from client-side JavaScript — no server required.
 
 1. The page loads the EmailJS browser SDK and initializes it with a **Public Key**.
 2. When the customer submits, the page builds a set of template parameters:
-   - `name`, `email`, `phone`, `address`
+   - `to_email` — the destination address, `careers@finchharbor.com`
+   - `name`, `email`, `phone`, `address` — the customer's contact details
    - `quote_total` — the final price (e.g. `$300.00`)
    - `quote_breakdown` — a line-by-line summary of each service and cost
    - `time` — submission timestamp
 3. The page calls `emailjs.send(SERVICE_ID, TEMPLATE_ID, templateParams)`.
 4. EmailJS fills those parameters into a pre-defined **email template** and sends the
    message through a connected Gmail account (the "from" account).
-5. The template's **To Email** is set to `careers@finchharbor.com`, so every quote is
-   delivered there. A green confirmation message is shown to the customer on success.
+5. The template's **To Email** field is set to the placeholder `{{to_email}}`, which
+   receives `careers@finchharbor.com` from the page. So every quote is delivered to
+   `careers@finchharbor.com`. A green confirmation message is shown to the customer on
+   success.
+
+The customer's own email (`{{email}}`) is captured as contact info and used as the
+template's **Reply To**, so the company can reply straight to the customer. It is **not**
+the destination of the quote.
 
 ### EmailJS configuration
 
@@ -63,12 +74,20 @@ Three identifiers are set near the top of the `<script>` block in `index.html`:
 var EMAILJS_PUBLIC_KEY  = "...";   // Account → General → Public Key
 var EMAILJS_SERVICE_ID  = "...";   // Email Services → connected Gmail service
 var EMAILJS_TEMPLATE_ID = "...";   // Email Templates → the quote template
+var QUOTE_RECIPIENT     = "careers@finchharbor.com";  // passed to the template as to_email
 ```
 
-The destination address (`careers@finchharbor.com`), subject line, and layout live in
-the EmailJS **template** on the EmailJS dashboard — not in the page code. The template
-uses these variables: `{{name}}`, `{{email}}`, `{{phone}}`, `{{address}}`,
+The subject line and layout live in the EmailJS **template** on the EmailJS dashboard.
+The destination is driven by the template's **To Email** field, which is set to the
+placeholder `{{to_email}}` and receives its value from the page. The template uses these
+variables: `{{to_email}}`, `{{name}}`, `{{email}}`, `{{phone}}`, `{{address}}`,
 `{{quote_total}}`, `{{quote_breakdown}}`, `{{time}}`.
+
+### Required EmailJS template settings
+
+- **To Email:** `{{to_email}}`
+- **Reply To:** `{{email}}`
+- **Subject:** `New pressure washing quote: {{name}} — {{quote_total}}`
 
 ### Why EmailJS
 
