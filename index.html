@@ -35,6 +35,15 @@
       padding: 28px;
     }
     h2 { font-size: 18px; margin: 0 0 16px; }
+    .formnote {
+      background: #f4f8fd;
+      border: 1px solid var(--blue);
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 13px;
+      color: var(--ink);
+      margin-bottom: 20px;
+    }
     label { display: block; font-weight: 600; font-size: 14px; margin: 14px 0 6px; }
     .hint { font-weight: 400; color: var(--muted); font-size: 12px; }
     input, select {
@@ -105,6 +114,7 @@
 
     <div class="card">
       <form id="quoteForm" novalidate>
+        <div class="formnote">This quote request will be sent to <strong>careers@finchharbor.com</strong>.</div>
         <h2>Your details</h2>
         <div class="row">
           <div>
@@ -116,7 +126,7 @@
             <input id="phone" name="phone" type="tel" autocomplete="tel" />
           </div>
         </div>
-        <label for="email">Email <span class="hint">(we'll send your quote here)</span></label>
+        <label for="email">Email</label>
         <input id="email" name="email" type="email" required autocomplete="email" />
         <label for="address">Service address</label>
         <input id="address" name="address" type="text" autocomplete="street-address" />
@@ -204,7 +214,7 @@
     var EMAILJS_SERVICE_ID = "service_idheyqt";
     var EMAILJS_TEMPLATE_ID = "template_wbpk2yy";
     // Destination for quotes. The EmailJS template's "To Email" is set to {{to_email}},
-    // and this value is passed in on every submission.
+    // and this value is passed in on every submission. careers@finchharbor.com
     var QUOTE_RECIPIENT = "careers@finchharbor.com";
     emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
 
