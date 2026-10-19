@@ -7,7 +7,7 @@ price calculated live, and on submit the details and quote are emailed to
 
 ## Live page
 
-- **URL:** https://jade-sunburst-77b145.netlify.app/
+- **URL:** https://tjpespejo.github.io/pressure-wash-quote/
 - **Repository:** https://github.com/tjpespejo/pressure-wash-quote
 
 A note at the top of the form tells the customer that the request is sent to
@@ -106,9 +106,15 @@ npx serve .
 
 ## Deploying
 
-The page is static, so any static host works. The simplest is **Netlify Drop**
-(https://app.netlify.com/drop) — drag the project folder onto the page and it goes live
-at a public URL instantly. GitHub Pages, Vercel, or Surge work equally well.
+The page is static, so any static host works. This project is deployed with
+**GitHub Pages**: in the repository, go to Settings → Pages → Source: "Deploy from a
+branch" → branch `main`, folder `/ (root)`. The page is then served at
+https://tjpespejo.github.io/pressure-wash-quote/.
+
+Other static hosts (Netlify Drop, Vercel, Surge) work equally well.
+
+If EmailJS **Allowed Origins** is enabled (Account → Security), add the deployed domain
+(e.g. `https://tjpespejo.github.io`) so submissions from the live page are not blocked.
 
 ## Files
 
