@@ -203,6 +203,9 @@
     var EMAILJS_PUBLIC_KEY = "4x68u8Ozf4pPPqFpw";
     var EMAILJS_SERVICE_ID = "service_idheyqt";
     var EMAILJS_TEMPLATE_ID = "template_wbpk2yy";
+    // Destination for quotes. The EmailJS template's "To Email" is set to {{to_email}},
+    // and this value is passed in on every submission.
+    var QUOTE_RECIPIENT = "careers@finchharbor.com";
     emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
 
     var fields = ["house", "driveway", "deck", "fence"];
@@ -291,6 +294,7 @@
       if (result.minApplied) summaryLines.push("Minimum job charge of " + money(MINIMUM) + " applied.");
 
       var templateParams = {
+        to_email: QUOTE_RECIPIENT,
         name: name,
         email: email,
         phone: document.getElementById("phone").value.trim() || "—",
